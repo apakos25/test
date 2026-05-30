@@ -8,34 +8,32 @@ jobs:
   build-windows-template:
     runs-on: ubuntu-latest
     steps:
+      # 1. Зависимости
       - name: Install dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y build-essential scons pkg-config libx11-dev libxcursor-dev libxinerama-dev libxrandr-dev libxi-dev libgl1-mesa-dev libglu1-mesa-dev libasound2-dev libpulse-dev libudev-dev mingw-w64
 
+      # 2. Клонирование (Ссылка гарантированно полная)
       - name: Clone Godot Engine Source
-        run: |
-          git clone --depth 1 --branch 4.3-stable https://github.com godot-source
+        run: git clone --depth 1 --branch 4.3-stable https://github.com godot-source
 
+      # 3. Компиляция
       - name: Compile Size-Optimized Template
         run: |
           cd godot-source
-          scons platform=windows target=template_release optimize=size \
-            use_lto=yes \
-            custom_modules="" \
-            module_3d_enabled=no \
-            module_msdfgen_enabled=no \
-            module_navigation_enabled=no \
-            module_multiplayer_enabled=no
+          scons platform=windows target=template_release optimize=size use_lto=yes custom_modules="" module_3d_enabled=no module_msdfgen_enabled=no module_navigation_enabled=no module_multiplayer_enabled=no
         
-      - name: Install UPX
-        run: sudo apt-get install -y upx
+      # 4. Сжатие UPX
+      - name: Install and Run UPX
+        run: |
+          sudo apt-get install -y upx
+          upx --best godot-source/bin/godot.windows.template_release.x86_64.exe
 
-      - name: Compress Executable with UPX
-        run: upx --best godot-source/bin/godot.windows.template_release.x86_64.exe
-
+      # 5. Сохранение результата
       - name: Upload Custom Template Artifact
         uses: actions/upload-artifact@v4
         with:
           name: windows-template
           path: godot-source/bin/godot.windows.template_release.x86_64.exe
+'@
