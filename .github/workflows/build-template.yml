@@ -2,7 +2,8 @@ name: Compile Minimized Godot Template
 on:
   push:
     branches: [ main ]
-
+  workflow_dispatch:
+ 
 jobs:
   build-windows-template:
     runs-on: ubuntu-latest
