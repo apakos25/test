@@ -8,18 +8,15 @@ jobs:
   build-windows-template:
     runs-on: ubuntu-latest
     steps:
-      # 1. Устанавливаем зависимости для сборки Windows-версии на Linux
       - name: Install dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y build-essential scons pkg-config libx11-dev libxcursor-dev libxinerama-dev libxrandr-dev libxi-dev libgl1-mesa-dev libglu1-mesa-dev libasound2-dev libpulse-dev libudev-dev mingw-w64
 
-      # 2. Клонируем исходный код Godot Engine (ветка 4.3 как пример stable-версии)
       - name: Clone Godot Engine Source
         run: |
           git clone --depth 1 --branch 4.3-stable https://github.com godot-source
 
-      # 3. Компилируем шаблон, зайдя в папку с исходниками Godot
       - name: Compile Size-Optimized Template
         run: |
           cd godot-source
@@ -31,15 +28,12 @@ jobs:
             module_navigation_enabled=no \
             module_multiplayer_enabled=no
         
-      # 4. Устанавливаем UPX для сжатия готового .exe
       - name: Install UPX
         run: sudo apt-get install -y upx
 
-      # 5. Сжимаем получившийся файл с помощью UPX
       - name: Compress Executable with UPX
         run: upx --best godot-source/bin/godot.windows.template_release.x86_64.exe
 
-      # 6. Сохраняем готовый файл в артефакты GitHub
       - name: Upload Custom Template Artifact
         uses: actions/upload-artifact@v4
         with:
