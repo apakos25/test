@@ -1,0 +1,39 @@
+name: Compile Minimized Godot Template
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-windows-template:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Godot Engine
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential scons pkg-config libx11-dev libxcursor-dev libxinerama-dev libxrandr-dev libxi-dev libgl1-mesa-dev libglu1-mesa-dev libasound2-dev libpulse-dev libudev-dev
+
+      - name: Compile Size-Optimized Template
+        run: |
+          scons platform=windows target=template_release optimize=size \
+            use_lto=yes \
+            module_3d_enabled=no \
+            module_bullet_enabled=no \
+            module_navigation_enabled=no \
+            module_multiplayer_enabled=no \
+            disable_3d=yes \
+            disable_advanced_gui=yes
+        
+      - name: Install UPX
+        run: sudo apt-get install -y upx
+
+      - name: Compress Executable with UPX
+        run: upx --best bin/godot.windows.template_release.x86_64.exe
+
+      - name: Upload Custom Template Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-template
+          path: bin/godot.windows.template_release.x86_64.exe
