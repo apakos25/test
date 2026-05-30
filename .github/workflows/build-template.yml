@@ -19,15 +19,23 @@ jobs:
         run: |
           sudo update-alternatives --set x86_64-w64-mingw32-gcc /usr/bin/x86_64-w64-mingw32-gcc-posix
           sudo update-alternatives --set x86_64-w64-mingw32-g++ /usr/bin/x86_64-w64-mingw32-g++-posix
-
+          
+      - name: Load SCons Cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ github.workspace }}\.scons_cache\
+          key: ${{ runner.os }}-godot-scons-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-godot-scons-
+            
       - name: Clone Godot Engine Source
         run: git clone --depth 1 --branch 4.6.2-stable https://github.com/godotengine/godot.git godot-source
 
       - name: Compile Custom Template
         run: |
           cd godot-source
-          scons platform=windows target=template_release optimize=size production=yes lto=none werror=no warnings=no custom_modules="" module_3d_enabled=no module_navigation_enabled=no module_multiplayer_enabled=no d3d12=no
-
+          scons platform=windows target=template_release debug_symbols=no scu_build=yes optimize=size production=yes lto=none werror=no warnings=no custom_modules="" module_3d_enabled=no openxr=no vulkan=no use_volk=no module_multiplayer_enabled=no d3d12=no module_gltf_enabled=no module_godot_physics_3d_enabled=no scons_cache="${{ github.workspace }}\.scons_cache" -j%NUMBER_OF_PROCESSORS%
+        
       - name: Compress with UPX
         run: upx --best godot-source/bin/godot.windows.template_release.x86_64.exe
 
