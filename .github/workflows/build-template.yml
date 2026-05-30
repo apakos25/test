@@ -21,12 +21,12 @@ jobs:
           sudo update-alternatives --set x86_64-w64-mingw32-g++ /usr/bin/x86_64-w64-mingw32-g++-posix
 
       - name: Clone Godot Engine Source
-        run: git clone --depth 1 --branch 4.3-stable https://github.com/godotengine/godot.git godot-source
+        run: git clone --depth 1 --branch 4.6.2-stable https://github.com/godotengine/godot.git godot-source
 
       - name: Compile Custom Template
         run: |
           cd godot-source
-          scons platform=windows target=template_release optimize=size use_lto=yes custom_modules="" module_3d_enabled=no module_navigation_enabled=no module_multiplayer_enabled=no production=yes
+          scons platform=windows target=template_release optimize=size production=yes lto=none werror=no warnings=no custom_modules="" module_3d_enabled=no module_navigation_enabled=no module_multiplayer_enabled=no
 
       - name: Compress with UPX
         run: upx --best godot-source/bin/godot.windows.template_release.x86_64.exe
