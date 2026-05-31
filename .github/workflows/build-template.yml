@@ -34,7 +34,7 @@ jobs:
       - name: Compile Custom Template
         run: |
           cd godot-source
-          scons platform=windows target=template_release disable_path_overrides=no debug_symbols=no scu_build=yes optimize=size production=yes lto=none werror=no warnings=no custom_modules="" module_3d_enabled=no openxr=no vulkan=no use_volk=no module_multiplayer_enabled=no d3d12=no module_gltf_enabled=no module_godot_physics_3d_enabled=no scons_cache="${{ github.workspace }}\.scons_cache" -j2
+          scons platform=windows target=template_release disable_path_overrides=no debug_symbols=no scu_build=yes optimize=size lto=none use_lld=no werror=no warnings=no custom_modules="" module_3d_enabled=no openxr=no vulkan=no use_volk=no module_multiplayer_enabled=no d3d12=no module_gltf_enabled=no module_godot_physics_3d_enabled=no scons_cache="${{ github.workspace }}\.scons_cache" -j2
       - name: Compress with UPX
         run: upx --best godot-source/bin/godot.windows.template_release.x86_64.exe
 
